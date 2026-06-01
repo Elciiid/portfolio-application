@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Web3 Automation Assistant - Developer Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#17171c',
+                primaryTextColor: '#f8fafc',
+                primaryBorderColor: '#2f2f37',
+                lineColor: '#f0abfc',
+                secondaryColor: '#101014',
+                tertiaryColor: '#0b0b0f'
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #f0abfc;
+            --accent-soft: rgba(240, 171, 252, 0.12);
+            --green: #86efac;
+            --yellow: #fde68a;
+            --red: #fca5a5;
+            --bg-dark: #08080b;
+            --card-bg: #121217;
+            --panel-bg: #17171c;
+            --border: #2a2a32;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 18% 0%, rgba(240, 171, 252, 0.11), transparent 28rem),
+                radial-gradient(circle at 84% 8%, rgba(125, 211, 252, 0.08), transparent 24rem),
+                var(--bg-dark);
+            color: #e5e7eb;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.18;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at center, black, transparent 74%);
+        }
+
+        .text-accent { color: var(--accent); }
+        .border-accent { border-color: var(--accent); }
+        .bg-accent-soft { background-color: var(--accent-soft); }
+
+        #sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: #3f3f46 transparent;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(240, 171, 252, 0.09);
+            color: var(--accent);
+        }
+
+        .nav-link.active {
+            border-right: 4px solid var(--accent);
+            background-color: rgba(240, 171, 252, 0.07);
+            color: var(--accent);
+        }
+
+        .doc-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.026));
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 1rem;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.24);
+        }
+
+        .sub-card {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.85rem;
+        }
+
+        code {
+            color: #f5d0fe;
+            background: rgba(255,255,255,0.06);
+            padding: 0.1rem 0.35rem;
+            border-radius: 0.35rem;
+            font-size: 0.85em;
+        }
+
+        pre {
+            background-color: #050508;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            font-family: "Fira Code", "Cascadia Code", "Courier New", monospace;
+            font-size: 0.875rem;
+            line-height: 1.65;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #e5e7eb;
+        }
+
+        .mermaid {
+            background: rgba(18, 18, 23, 0.88);
+            padding: 1.25rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            vertical-align: top;
+        }
+
+        th {
+            background-color: rgba(255,255,255,0.045);
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+        }
+
+        .method {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 4rem;
+            border-radius: 999px;
+            padding: 0.22rem 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+        }
+
+        .method-get { color: #bfdbfe; background: rgba(59, 130, 246, 0.16); border: 1px solid rgba(96, 165, 250, 0.35); }
+        .method-post { color: #bbf7d0; background: rgba(34, 197, 94, 0.14); border: 1px solid rgba(74, 222, 128, 0.32); }
+        .method-patch { color: #fde68a; background: rgba(234, 179, 8, 0.14); border: 1px solid rgba(250, 204, 21, 0.32); }
+        .method-delete { color: #fecaca; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(248, 113, 113, 0.32); }
+
+        .workflow-step {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .workflow-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 1.08rem;
+            top: 2.7rem;
+            bottom: -1.2rem;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(240, 171, 252, 0.4), transparent);
+        }
+
+        .step-badge {
+            flex-shrink: 0;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 999px;
+            border: 2px solid rgba(240, 171, 252, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            background: #09090d;
+            z-index: 1;
+        }
+
+        .step-card {
+            flex: 1;
+            background: rgba(18, 18, 23, 0.92);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.9rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .step-tag {
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.18rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(240, 171, 252, 0.24);
+            color: #f5d0fe;
+            background: rgba(240, 171, 252, 0.08);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen flex-col md:flex-row">
+
+    <aside id="sidebar" class="hidden h-screen w-72 flex-shrink-0 overflow-y-auto border-r border-white/10 bg-black/70 backdrop-blur-xl md:sticky md:top-0 md:block">
+        <div class="p-6">
+            <div class="mb-8 flex items-center gap-3">
+                <div class="grid h-10 w-10 place-items-center rounded-xl bg-white text-black">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black leading-tight tracking-tight">AI Web3</h1>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Automation Assistant</p>
+                </div>
+            </div>
+            <nav class="space-y-1 text-sm">
+                <a href="#overview" class="nav-link block rounded-lg px-4 py-2 transition">Overview</a>
+                <a href="#stack" class="nav-link block rounded-lg px-4 py-2 transition">Tech Stack</a>
+                <a href="#architecture" class="nav-link block rounded-lg px-4 py-2 transition">Architecture</a>
+                <a href="#database" class="nav-link block rounded-lg px-4 py-2 transition">Database</a>
+                <a href="#api" class="nav-link block rounded-lg px-4 py-2 transition">API Reference</a>
+                <a href="#services" class="nav-link block rounded-lg px-4 py-2 transition">Service Layer</a>
+                <a href="#workflows" class="nav-link block rounded-lg px-4 py-2 transition">Core Workflows</a>
+                <a href="#environment" class="nav-link block rounded-lg px-4 py-2 transition">Environment</a>
+                <a href="#security" class="nav-link block rounded-lg px-4 py-2 transition">Security</a>
+                <a href="#local-dev" class="nav-link block rounded-lg px-4 py-2 transition">Local Development</a>
+                <a href="#roadmap" class="nav-link block rounded-lg px-4 py-2 transition">Roadmap</a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="relative z-10 mx-auto max-w-6xl flex-1 p-6 md:p-12">
+
+        <section id="overview" class="mb-16">
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-fuchsia-200/20 bg-fuchsia-200/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-accent">
+                <i class="fa-solid fa-satellite-dish"></i>
+                Developer Documentation
+            </div>
+            <h2 class="border-b border-white/10 pb-5 text-4xl font-black tracking-tight md:text-5xl">
+                AI Web3 Automation Assistant
+            </h2>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-gray-400">
+                AI Web3 Automation Assistant is a premium blockchain operations workspace. It lets users monitor wallets,
+                create automation rules with natural language, ingest real blockchain activity, generate AI transaction
+                intelligence, and receive in-app or Telegram automation alerts.
+            </p>
+            <div class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-accent"><i class="fa-solid fa-bullseye pr-2"></i> Product Purpose</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        A focused AI infrastructure workspace for on-chain monitoring and automation. It is not a swap app,
+                        trading bot, NFT product, or generic dashboard.
+                    </p>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-accent"><i class="fa-solid fa-circle-nodes pr-2"></i> Operational Flow</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Wallet refresh leads to transaction ingestion, AI summaries, rule evaluation, notification creation,
+                        and optional Telegram digest delivery.
+                    </p>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-accent"><i class="fa-solid fa-user-lock pr-2"></i> Demo Access</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><span class="text-white">Email:</span> <code>demoaccount@gmail.com</code></li>
+                        <li><span class="text-white">Password:</span> <code>password</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="stack" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-layer-group text-accent"></i> Tech Stack
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">Frontend</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><span class="text-white">Framework:</span> Next.js 15 App Router</li>
+                        <li><span class="text-white">Language:</span> TypeScript</li>
+                        <li><span class="text-white">UI:</span> React 19, Tailwind CSS, shadcn-style local primitives</li>
+                        <li><span class="text-white">Motion:</span> Framer Motion</li>
+                        <li><span class="text-white">Icons:</span> Lucide React</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">Backend and Providers</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><span class="text-white">Auth:</span> Supabase Auth</li>
+                        <li><span class="text-white">Database:</span> Supabase Postgres with RLS</li>
+                        <li><span class="text-white">Blockchain:</span> Alchemy APIs</li>
+                        <li><span class="text-white">AI:</span> Google Gemini Flash Lite through REST</li>
+                        <li><span class="text-white">External Alerts:</span> Telegram Bot API</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-sitemap text-accent"></i> System Architecture
+            </h2>
+            <p class="mb-6 max-w-3xl leading-7 text-gray-400">
+                The app uses a layered Next.js architecture. React screens call lightweight hooks and API helpers.
+                API routes validate input and authenticated user context. Service modules own business logic and call
+                Supabase, Alchemy, Gemini, and Telegram from the server side.
+            </p>
+            <div class="mermaid">
+                graph TD
+                A[React App Workspace] --> B[Frontend Hooks and API Client]
+                B --> C[Next.js API Routes]
+                C --> D[Service Layer]
+                D --> E[(Supabase Auth and Postgres)]
+                D --> F[Alchemy Blockchain APIs]
+                D --> G[Gemini Flash Lite]
+                D --> H[Telegram Bot API]
+                I[Supabase Middleware] --> A
+                J[Vercel Cron Route] --> D
+            </div>
+            <div class="grid gap-5 md:grid-cols-3">
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Public Routes</h3>
+                    <p class="text-sm leading-6 text-gray-400"><code>/</code>, <code>/sign-in</code>, and <code>/sign-up</code>.</p>
+                </div>
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Protected Workspace</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Dashboard, wallets, automations, builder, transactions, notifications, and settings.
+                    </p>
+                </div>
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Response Contract</h3>
+                    <p class="text-sm leading-6 text-gray-400">API success responses use <code>{ data }</code>. Failures use <code>{ error }</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="database" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-database text-accent"></i> Database and Storage
+            </h2>
+            <p class="mb-6 text-gray-400">
+                Supabase Postgres stores user-owned app data. Row Level Security is enabled on the new app tables.
+                Users can only read and mutate their own profile, wallets, automations, transactions for their wallets,
+                and notifications.
+            </p>
+            <div class="overflow-x-auto doc-card p-1">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Description</th>
+                            <th>Important Fields</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>profiles</code></td>
+                            <td>One profile row per Supabase Auth user.</td>
+                            <td><code>id</code>, <code>email</code>, <code>full_name</code>, <code>avatar_url</code>, <code>created_at</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>wallets</code></td>
+                            <td>Monitored wallet records owned by a user.</td>
+                            <td><code>address</code>, <code>label</code>, <code>chain</code>, <code>balance_usd</code>, <code>enrichment_status</code>, <code>token_summary_json</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>automation_rules</code></td>
+                            <td>Automation rules parsed from natural language and saved by the user.</td>
+                            <td><code>raw_prompt</code>, <code>condition_type</code>, <code>condition_value</code>, <code>token</code>, <code>action_type</code>, <code>status</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>transactions</code></td>
+                            <td>Provider-ingested wallet transaction records.</td>
+                            <td><code>hash</code>, <code>type</code>, <code>token</code>, <code>amount</code>, <code>from_address</code>, <code>to_address</code>, <code>ai_summary</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>notifications</code></td>
+                            <td>In-app automation alert records linked to wallet, rule, and transaction context.</td>
+                            <td><code>title</code>, <code>message</code>, <code>type</code>, <code>read</code>, <code>automation_rule_id</code>, <code>transaction_id</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-6">
+                <h3 class="mb-3 text-xl font-bold text-accent">Key Deduplication Rules</h3>
+                <pre><code>transactions: unique per wallet_id + hash
+notifications: unique per automation_rule_id + wallet_id + transaction_id
+automation execution: evaluates only newly inserted transactions during enrichment</code></pre>
+            </div>
+        </section>
+
+        <section id="api" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-code-branch text-accent"></i> API Reference
+            </h2>
+            <div class="space-y-6">
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Wallets</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-get">GET</span> <code>/api/wallets</code> - list signed-in user's wallets.</p>
+                        <p><span class="method method-post">POST</span> <code>/api/wallets</code> - create a wallet and attempt enrichment if Alchemy is configured.</p>
+                        <p><span class="method method-delete">DELETE</span> <code>/api/wallets/[id]</code> - delete a wallet owned by the user.</p>
+                        <p><span class="method method-post">POST</span> <code>/api/wallets/[id]/refresh</code> - refresh a wallet, ingest transactions, summarize, and evaluate automations.</p>
+                    </div>
+                </div>
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Automations</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-get">GET</span> <code>/api/automations</code> - list saved rules.</p>
+                        <p><span class="method method-post">POST</span> <code>/api/automations</code> - create a rule from structured parsed fields.</p>
+                        <p><span class="method method-patch">PATCH</span> <code>/api/automations/[id]</code> - edit rule fields or status.</p>
+                        <p><span class="method method-delete">DELETE</span> <code>/api/automations/[id]</code> - delete a rule.</p>
+                    </div>
+                </div>
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Transactions and Notifications</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-get">GET</span> <code>/api/transactions</code> - list transaction rows, optionally filtered by <code>walletId</code>.</p>
+                        <p><span class="method method-get">GET</span> <code>/api/transactions/[id]</code> - fetch one transaction detail.</p>
+                        <p><span class="method method-get">GET</span> <code>/api/notifications</code> - list notifications.</p>
+                        <p><span class="method method-patch">PATCH</span> <code>/api/notifications/[id]</code> - update notification read state.</p>
+                    </div>
+                </div>
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">AI, Demo, and Scheduled Monitoring</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-post">POST</span> <code>/api/ai/parse-rule</code> - parse natural-language automation prompts through Gemini with deterministic fallback.</p>
+                        <p><span class="method method-post">POST</span> <code>/api/demo/monitoring-run</code> - protected Settings button route that runs one monitoring cycle for the signed-in user's wallets.</p>
+                        <p><span class="method method-get">GET</span> <code>/api/cron/monitor-wallets</code> - scheduled monitoring route protected by <code>CRON_SECRET</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-gears text-accent"></i> Service Layer
+            </h2>
+            <div class="overflow-x-auto doc-card p-1">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Responsibility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>walletService.ts</code></td>
+                            <td>Wallet list, create, fetch, and delete data access.</td>
+                        </tr>
+                        <tr>
+                            <td><code>walletEnrichmentService.ts</code></td>
+                            <td>Owns wallet refresh orchestration: Alchemy snapshot, transaction insert, Gemini summaries, and automation evaluation.</td>
+                        </tr>
+                        <tr>
+                            <td><code>automationService.ts</code></td>
+                            <td>CRUD operations for saved automation rules.</td>
+                        </tr>
+                        <tr>
+                            <td><code>automationExecutionService.ts</code></td>
+                            <td>Evaluates active rules against newly ingested transactions and creates notifications.</td>
+                        </tr>
+                        <tr>
+                            <td><code>aiRuleParserService.ts</code></td>
+                            <td>Converts natural language prompts into validated automation rule objects.</td>
+                        </tr>
+                        <tr>
+                            <td><code>aiTransactionSummaryService.ts</code></td>
+                            <td>Generates concise transaction intelligence for new transactions.</td>
+                        </tr>
+                        <tr>
+                            <td><code>scheduledMonitoringService.ts</code></td>
+                            <td>Loads monitored wallets and runs enrichment safely across a scheduled or manual demo cycle.</td>
+                        </tr>
+                        <tr>
+                            <td><code>telegramNotificationService.ts</code></td>
+                            <td>Sends compact Telegram channel digests without blocking in-app notification creation.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="workflows" class="mb-16">
+            <h2 class="mb-2 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-route text-accent"></i> Core Workflows
+            </h2>
+            <p class="mb-8 text-sm text-gray-500">
+                The app's most important behavior is backend-assisted monitoring: refresh wallets, ingest transactions,
+                generate AI context, evaluate automations, and notify operators.
+            </p>
+
+            <div class="mb-10">
+                <h3 class="mb-4 text-xl font-bold text-accent">Wallet Monitoring Cycle</h3>
+                <div class="mermaid">
+                    sequenceDiagram
+                    participant U as User or Cron
+                    participant API as Next.js API Route
+                    participant S as scheduledMonitoringService
+                    participant W as walletEnrichmentService
+                    participant A as Alchemy
+                    participant G as Gemini
+                    participant DB as Supabase
+                    participant T as Telegram
+                    U->>API: Trigger monitoring run
+                    API->>S: runScheduledMonitoring()
+                    S->>W: enrichWallet()
+                    W->>A: Fetch balances and transfers
+                    W->>DB: Store wallet snapshot and new transactions
+                    W->>G: Summarize new transactions
+                    W->>DB: Save ai_summary
+                    W->>DB: Load active automation rules
+                    W->>DB: Create matching notifications
+                    W->>T: Optional digest delivery
+                    API-->>U: Run summary
+                </div>
+            </div>
+
+            <div class="space-y-0">
+                <div class="workflow-step">
+                    <div class="step-badge">1</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Natural-Language Rule Parsing</h3>
+                            <span class="step-tag">AI PARSER</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            The user enters a prompt such as <code>Notify me when wallet sends over 1000 USDT</code>.
+                            <code>/api/ai/parse-rule</code> attempts Gemini structured parsing, validates the schema,
+                            and falls back to deterministic parsing if the model fails.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">2</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Rule Persistence</h3>
+                            <span class="step-tag">SUPABASE WRITE</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            The structured rule is saved to <code>automation_rules</code>. Supported MVP rule types are
+                            <code>transfer_amount</code>, <code>receive_amount</code>, and <code>token_movement</code>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">3</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Blockchain Enrichment</h3>
+                            <span class="step-tag">ALCHEMY</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            Wallet creation, wallet refresh, demo monitoring, and scheduled monitoring can call Alchemy
+                            to fetch balances, token metadata, and recent transfers. Transfers are normalized before
+                            insertion into the app database.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">4</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Automation Execution</h3>
+                            <span class="step-tag">RULE ENGINE</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            Newly inserted transactions are compared against active automation rules. Matches create
+                            deduplicated in-app notification rows linked to the rule, wallet, and transaction.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">5</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Notification Delivery</h3>
+                            <span class="step-tag">IN-APP + TELEGRAM</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            Notifications always persist in Supabase first. Telegram digest delivery is optional and
+                            failure-safe: Telegram errors are logged but do not break wallet refresh or in-app alerts.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="environment" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-key text-accent"></i> Environment Variables
+            </h2>
+            <p class="mb-5 text-gray-400">
+                Keep secrets server-side. Never expose service-role, Alchemy, Gemini, Telegram, or cron secrets in client components.
+            </p>
+            <pre><code>NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+ALCHEMY_API_KEY=
+GEMINI_API_KEY=
+GEMINI_RULE_PARSER_MODEL=gemini-2.5-flash-lite
+GEMINI_TRANSACTION_SUMMARY_MODEL=gemini-2.5-flash-lite
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+ENABLE_TELEGRAM_NOTIFICATIONS=false
+ENABLE_SCHEDULED_MONITORING=false
+CRON_SECRET=</code></pre>
+            <div class="mt-5 grid gap-4 md:grid-cols-2">
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Quota Protection</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Keep scheduled monitoring disabled unless testing. The protected Settings demo run can trigger
+                        one controlled cycle for the signed-in user.
+                    </p>
+                </div>
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Telegram Behavior</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Background Telegram delivery respects <code>ENABLE_TELEGRAM_NOTIFICATIONS</code>. The Settings
+                        demo route can force Telegram delivery when bot credentials are configured.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="security" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-shield-halved text-accent"></i> Security Notes
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-white">Authentication</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>Supabase email/password auth powers sign-in and sign-up.</li>
+                        <li>Protected routes redirect logged-out users to <code>/sign-in</code>.</li>
+                        <li>API routes use authenticated server context before calling services.</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-white">Database Protection</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>RLS is enabled on app tables.</li>
+                        <li>User-owned rows are scoped through <code>auth.uid()</code>.</li>
+                        <li>Service-role access is reserved for server-only scheduled/demo monitoring.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="local-dev" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-terminal text-accent"></i> Local Development
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">Common Commands</h3>
+                    <pre><code>npm run dev
+npm run lint
+npm run build
+npm run start</code></pre>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">Provider QA</h3>
+                    <pre><code>npm run qa:alchemy -- Ethereum 0xd8dA6BF26964aF9d7eEd9e03e53415D37aA96045
+npm run qa:gemini</code></pre>
+                </div>
+            </div>
+            <div class="mt-5 doc-card p-6">
+                <h3 class="mb-3 text-xl font-bold">Demo Flow</h3>
+                <ol class="list-decimal space-y-2 pl-5 text-sm leading-6 text-gray-400">
+                    <li>Sign in with the demo account.</li>
+                    <li>Open Dashboard and show the AI Command Center.</li>
+                    <li>Create or inspect an automation rule.</li>
+                    <li>Open Settings and run one controlled demo monitoring cycle.</li>
+                    <li>Return to Wallets, Transactions, Notifications, and Telegram to inspect the resulting activity.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="roadmap" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-road text-accent"></i> Roadmap and Boundaries
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-green-300">Currently Real</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>Supabase Auth and protected routes.</li>
+                        <li>Wallet CRUD and provider enrichment.</li>
+                        <li>Blockchain-derived transaction ingestion.</li>
+                        <li>Gemini rule parsing and transaction summaries with fallbacks.</li>
+                        <li>Synchronous automation execution after ingestion.</li>
+                        <li>In-app notifications and Telegram digest delivery.</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-yellow-200">Still MVP / Future Work</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>No production blockchain indexer or websocket monitoring.</li>
+                        <li>No queue or distributed worker infrastructure.</li>
+                        <li>No Slack, email, webhook, or push delivery.</li>
+                        <li>Wallet risk scoring and 24h change are simplified placeholders.</li>
+                        <li>No organization/team/role management yet.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-20 border-t border-white/10 pt-8 text-center text-xs text-gray-600">
+            <p>&copy; 2026 AI Web3 Automation Assistant. Developer documentation for portfolio and handoff use.</p>
+        </footer>
+    </main>
+
+    <script>
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 160) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach((link) => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
