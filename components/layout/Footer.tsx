@@ -8,7 +8,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const buildInfo = {
   framework: "Next.js",
   version:   "v2.1.0",
-  updated:   "April 2026",
+  updated:   "June 2026",
 };
 
 const socials = [
