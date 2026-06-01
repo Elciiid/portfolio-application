@@ -192,6 +192,7 @@ export const projects: Project[] = [
     featured: true,
     accentColor: "#6366F1",
     icon: "AI",
+    liveUrl: "https://aiweb3-assistant.vercel.app/",
     videoPath: "AIWeb3Assistant.mp4",
     docsHref: "/docs/developer_documentationWEB3.html",
     metrics: [
