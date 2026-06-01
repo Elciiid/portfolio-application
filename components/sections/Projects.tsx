@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ExternalLink, Music, ClipboardCheck, Building2,
   Ticket, Globe, BarChart3, Dices, Check, Play, X, MessagesSquare,
   Bot, ShieldCheck, Languages, FileText,
   LucideProps,
 } from "lucide-react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { internshipProjects, personalProjects } from "@/lib/projects";
 import { Project } from "@/types";
 
@@ -42,6 +42,26 @@ function getProjectSignal(project: Project) {
   if (project.category === "web3") return "Automation prototype";
   if (project.category === "ai") return "Applied AI project";
   return project.docsHref ? "Technical breakdown available" : "Portfolio project";
+}
+
+async function safePlayVideo(video: HTMLVideoElement) {
+  video.muted = true;
+  video.defaultMuted = true;
+  video.playsInline = true;
+  video.autoplay = true;
+  video.setAttribute("muted", "");
+  video.setAttribute("autoplay", "");
+  video.setAttribute("playsinline", "");
+  video.setAttribute("webkit-playsinline", "");
+
+  if (!video.paused && !video.ended) return true;
+
+  try {
+    await video.play();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // ─── Video Modal ─────────────────────────────────────────────────────────────
@@ -366,23 +386,79 @@ function ProjectFallback({ project, onPlayVideo }: { project: Project; onPlayVid
 }
 
 function LiveOperationsWindow({ project, onPlayVideo }: { project: Project; onPlayVideo: () => void }) {
-  const shouldReduceMotion = useReducedMotion();
-  const previewVideoRef = useRef<HTMLVideoElement>(null);
+  const previewVideoRef = useRef<HTMLVideoElement | null>(null);
+  const previewFrameRef = useRef<HTMLDivElement>(null);
   const [readyVideoPath, setReadyVideoPath] = useState<string | null>(null);
 
+  const setPreviewVideoRef = useCallback((video: HTMLVideoElement | null) => {
+    previewVideoRef.current = video;
+
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+  }, []);
+
+  const tryPlayPreview = useCallback(() => {
+    const video = previewVideoRef.current;
+    if (!video || !project.videoPath) return;
+
+    void safePlayVideo(video).then((started) => {
+      if (started) {
+        setReadyVideoPath(project.videoPath ?? null);
+      }
+    });
+  }, [project.videoPath]);
+
   useEffect(() => {
+    setReadyVideoPath(null);
+
     const video = previewVideoRef.current;
     if (!video) return;
 
-    if (shouldReduceMotion) {
-      video.pause();
-      return;
-    }
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    const firstRetry = window.setTimeout(() => tryPlayPreview(), 80);
+    const secondRetry = window.setTimeout(() => tryPlayPreview(), 500);
+    const fallbackReady = window.setTimeout(() => {
+      setReadyVideoPath(project.videoPath ?? null);
+    }, 2600);
 
-    video.play().catch(() => {
-      // Muted autoplay can still be blocked by browser policy; the modal demo remains available.
-    });
-  }, [project.videoPath, shouldReduceMotion]);
+    return () => {
+      window.clearTimeout(firstRetry);
+      window.clearTimeout(secondRetry);
+      window.clearTimeout(fallbackReady);
+    };
+  }, [project.videoPath, tryPlayPreview]);
+
+  useEffect(() => {
+    const frame = previewFrameRef.current;
+    if (!frame || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          tryPlayPreview();
+        }
+      },
+      { threshold: 0.28 }
+    );
+
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, [project.videoPath, tryPlayPreview]);
+
+  const handleVideoReady = useCallback(() => {
+    setReadyVideoPath(project.videoPath ?? null);
+    tryPlayPreview();
+  }, [project.videoPath, tryPlayPreview]);
 
   if (!project.videoPath) {
     return <ProjectFallback project={project} onPlayVideo={onPlayVideo} />;
@@ -391,15 +467,18 @@ function LiveOperationsWindow({ project, onPlayVideo }: { project: Project; onPl
   return (
     <AnimatePresence mode="wait">
       <motion.div
+        ref={previewFrameRef}
         key={project.id}
         className="absolute inset-0 overflow-hidden bg-[#050505]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.38, ease: easeEnter }}
+        onPointerDown={tryPlayPreview}
+        onMouseEnter={tryPlayPreview}
       >
         <video
-          ref={previewVideoRef}
+          ref={setPreviewVideoRef}
           key={project.videoPath}
           src={`/videos/${project.videoPath}`}
           title={`${project.title} live operations preview`}
@@ -408,12 +487,17 @@ function LiveOperationsWindow({ project, onPlayVideo }: { project: Project; onPl
           muted
           loop
           playsInline
-          preload="metadata"
-          onLoadedData={() => setReadyVideoPath(project.videoPath ?? null)}
+          preload="auto"
+          onLoadedMetadata={handleVideoReady}
+          onLoadedData={handleVideoReady}
+          onCanPlay={handleVideoReady}
+          onCanPlayThrough={handleVideoReady}
+          onPlaying={() => setReadyVideoPath(project.videoPath ?? null)}
+          onClick={tryPlayPreview}
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
           style={{
             background: "#050505",
-            opacity: readyVideoPath === project.videoPath ? 0.92 : 0,
+            opacity: readyVideoPath === project.videoPath ? 0.92 : 0.72,
             objectPosition: "center center",
           }}
         />
@@ -483,19 +567,6 @@ function LiveOperationsWindow({ project, onPlayVideo }: { project: Project; onPl
             {getProjectSignal(project)}
           </span>
         </div>
-
-        {readyVideoPath !== project.videoPath && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className="h-8 w-8 rounded-full border"
-              style={{
-                borderColor: "rgba(255,255,255,0.1)",
-                borderTopColor: project.accentColor,
-              }}
-              aria-hidden="true"
-            />
-          </div>
-        )}
 
         <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
           <motion.div
