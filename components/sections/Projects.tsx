@@ -31,7 +31,7 @@ const PROJECT_ICONS: Record<string, IconComponent> = {
 const techStack: { label: string; items: string[] }[] = [
   { label: "Backend",  items: ["PHP 8.x", "SQL Server", "MSSQL", "JSON / REST"] },
   { label: "Frontend", items: ["Next.js", "TypeScript", "Tailwind CSS", "Vanilla JS"] },
-  { label: "Systems",  items: ["WebSockets", "Three.js", "Bootstrap 5", "RBAC"] },
+  { label: "Systems",  items: ["Long-poll", "Three.js", "Automation Rules", "RBAC"] },
 ];
 
 const easeEnter = [0.22, 1, 0.36, 1] as const;
