@@ -711,7 +711,7 @@ export default function Projects() {
               Selected Work
             </h2>
             <p className="text-[22px] md:text-[28px] font-semibold leading-tight max-w-xl tracking-tight">
-              Production systems and applied AI/security work.
+              Production systems and applied AI automation work.
             </p>
           </motion.div>
 
