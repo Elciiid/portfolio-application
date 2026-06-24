@@ -179,6 +179,28 @@ function ProjectActions({ project, onPlayVideo }: { project: Project; onPlayVide
   );
 }
 
+function DemoCredentials({ project }: { project: Project }) {
+  if (!project.liveUrl) return null;
+
+  return (
+    <motion.div
+      className="inline-flex w-fit max-w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-lg px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] backdrop-blur-md z-10"
+      style={{
+        background: "rgba(0,0,0,0.34)",
+        border: "1px solid rgba(255,255,255,0.095)",
+        color: "rgba(255,255,255,0.58)",
+      }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.42 }}
+    >
+      <span style={{ color: project.accentColor }}>Demo account</span>
+      <span>Username: admin</span>
+      <span>Password: password</span>
+    </motion.div>
+  );
+}
+
 function ProjectFallback({ project, onPlayVideo }: { project: Project; onPlayVideo: () => void }) {
   const Icon = PROJECT_ICONS[project.id];
 
@@ -368,18 +390,7 @@ function ProjectFallback({ project, onPlayVideo }: { project: Project; onPlayVid
           </motion.span>
         )}
 
-        {/* Demo credentials */}
-        {project.liveUrl && (
-          <motion.span
-            className="text-[10px] font-mono tracking-wider uppercase z-10"
-            style={{ opacity: 0.35, color: "rgba(255,255,255,0.6)" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.35 }}
-            transition={{ delay: 0.6 }}
-          >
-            Portfolio sandbox only: admin / password
-          </motion.span>
-        )}
+        <DemoCredentials project={project} />
       </motion.div>
     </AnimatePresence>
   );
@@ -605,6 +616,7 @@ function LiveOperationsWindow({ project, onPlayVideo }: { project: Project; onPl
             )}
 
             <ProjectActions project={project} onPlayVideo={onPlayVideo} />
+            <DemoCredentials project={project} />
           </motion.div>
         </div>
       </motion.div>
