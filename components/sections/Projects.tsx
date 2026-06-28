@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ExternalLink, Music, ClipboardCheck, Building2,
   Ticket, Globe, BarChart3, Dices, Check, Play, X, MessagesSquare,
-  Bot, ShieldCheck, Languages, FileText,
+  Bot, ShieldCheck, Languages, FileText, Brain,
   LucideProps,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +25,7 @@ const PROJECT_ICONS: Record<string, IconComponent> = {
   "ai-web3-automation-assistant": Bot,
   "facebook-phishing-detector":   ShieldCheck,
   "sulyap-kapampangan":           Languages,
+  "jarvis-ai-knowledge-base":     Brain,
 };
 
 // ─── Tech stack ───────────────────────────────────────────────────────────────
@@ -688,9 +689,9 @@ function TabButton({ label, count, active, onClick }: { label: string; count: nu
 
 // ─── Main Projects Section ────────────────────────────────────────────────────
 export default function Projects() {
-  const [tab, setTab] = useState<"internship" | "personal">("internship");
+  const [tab, setTab] = useState<"internship" | "personal">("personal");
   const projects = tab === "internship" ? internshipProjects : personalProjects;
-  const [active, setActive] = useState<Project>(internshipProjects[0]);
+  const [active, setActive] = useState<Project>(personalProjects[0]);
   const [videoProject, setVideoProject] = useState<Project | null>(null);
   const ActiveIcon = PROJECT_ICONS[active.id];
 

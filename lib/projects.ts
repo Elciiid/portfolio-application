@@ -2,6 +2,28 @@ import { Project } from "@/types";
 
 export const projects: Project[] = [
   {
+    id: "jarvis-ai-knowledge-base",
+    title: "Jarvis – AI Knowledge Base",
+    description:
+      "Multi-tenant RAG platform that turns company documents into a cited, grounded AI assistant.",
+    longDescription:
+      "Jarvis lets companies upload PDFs, DOCX files, and SOPs. The backend extracts and chunks the text, embeds it with Google Gemini into a pgvector database, then answers business questions with inline-cited, retrieval-augmented responses. Includes multi-tenant workspaces, a Knowledge Capture flow (guided interview → AI draft → published into the RAG pipeline), document lifecycle management, and activity logging.",
+    tech: ["Next.js 14", "TypeScript", "Tailwind CSS", "FastAPI", "Supabase", "pgvector", "Google Gemini"],
+    category: "ai",
+    source: "personal",
+    featured: true,
+    accentColor: "#5E6AD2",
+    icon: "JAR",
+    liveUrl: "https://ai-knowledge-base-web.vercel.app/",
+    videoPath: "Jarvis.mp4",
+    metrics: [
+      { label: "Pipeline", value: "RAG + pgvector" },
+      { label: "Isolation", value: "Multi-tenant" },
+      { label: "AI model", value: "Gemini" },
+    ],
+  },
+
+  {
     id: "mp3-streamer",
     title: "MP3 Streamer",
     description:
