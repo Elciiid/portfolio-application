@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis – AI Knowledge Base · Developer Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#17171e',
+                primaryTextColor: '#f8fafc',
+                primaryBorderColor: '#2f2f3f',
+                lineColor: '#818cf8',
+                secondaryColor: '#101018',
+                tertiaryColor: '#0b0b12'
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #818cf8;
+            --accent-soft: rgba(129, 140, 248, 0.12);
+            --green: #86efac;
+            --yellow: #fde68a;
+            --red: #fca5a5;
+            --bg-dark: #08080e;
+            --card-bg: #12121a;
+            --panel-bg: #17171e;
+            --border: #2a2a38;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background:
+                radial-gradient(circle at 15% 0%, rgba(94, 106, 210, 0.14), transparent 28rem),
+                radial-gradient(circle at 88% 6%, rgba(129, 140, 248, 0.08), transparent 24rem),
+                var(--bg-dark);
+            color: #e5e7eb;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.16;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at center, black, transparent 74%);
+        }
+
+        .text-accent { color: var(--accent); }
+        .border-accent { border-color: var(--accent); }
+        .bg-accent-soft { background-color: var(--accent-soft); }
+
+        #sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: #3f3f56 transparent;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(129, 140, 248, 0.09);
+            color: var(--accent);
+        }
+
+        .nav-link.active {
+            border-right: 4px solid var(--accent);
+            background-color: rgba(129, 140, 248, 0.07);
+            color: var(--accent);
+        }
+
+        .doc-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.026));
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 1rem;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.24);
+        }
+
+        .sub-card {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.85rem;
+        }
+
+        code {
+            color: #c7d2fe;
+            background: rgba(255,255,255,0.06);
+            padding: 0.1rem 0.35rem;
+            border-radius: 0.35rem;
+            font-size: 0.85em;
+        }
+
+        pre {
+            background-color: #050508;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            font-family: "Fira Code", "Cascadia Code", "Courier New", monospace;
+            font-size: 0.875rem;
+            line-height: 1.65;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #e5e7eb;
+        }
+
+        .mermaid {
+            background: rgba(18, 18, 26, 0.88);
+            padding: 1.25rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            vertical-align: top;
+        }
+
+        th {
+            background-color: rgba(255,255,255,0.045);
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+        }
+
+        .method {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 4rem;
+            border-radius: 999px;
+            padding: 0.22rem 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+        }
+
+        .method-get    { color: #bfdbfe; background: rgba(59,130,246,0.16); border: 1px solid rgba(96,165,250,0.35); }
+        .method-post   { color: #bbf7d0; background: rgba(34,197,94,0.14);  border: 1px solid rgba(74,222,128,0.32); }
+        .method-patch  { color: #fde68a; background: rgba(234,179,8,0.14);  border: 1px solid rgba(250,204,21,0.32); }
+        .method-delete { color: #fecaca; background: rgba(239,68,68,0.14);  border: 1px solid rgba(248,113,113,0.32); }
+
+        .workflow-step {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .workflow-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 1.08rem;
+            top: 2.7rem;
+            bottom: -1.2rem;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(129,140,248,0.4), transparent);
+        }
+
+        .step-badge {
+            flex-shrink: 0;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 999px;
+            border: 2px solid rgba(129,140,248,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            background: #09090e;
+            z-index: 1;
+        }
+
+        .step-card {
+            flex: 1;
+            background: rgba(18,18,26,0.92);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.9rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .step-tag {
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.18rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(129,140,248,0.24);
+            color: #c7d2fe;
+            background: rgba(129,140,248,0.08);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen flex-col md:flex-row">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="hidden h-screen w-72 flex-shrink-0 overflow-y-auto border-r border-white/10 bg-black/70 backdrop-blur-xl md:sticky md:top-0 md:block">
+        <div class="p-6">
+            <div class="mb-8 flex items-center gap-3">
+                <div class="grid h-10 w-10 place-items-center rounded-xl bg-indigo-500 text-white">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black leading-tight tracking-tight">Jarvis</h1>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-accent">AI Knowledge Base</p>
+                </div>
+            </div>
+            <nav class="space-y-1 text-sm">
+                <a href="#overview"     class="nav-link block rounded-lg px-4 py-2 transition">Overview</a>
+                <a href="#stack"        class="nav-link block rounded-lg px-4 py-2 transition">Tech Stack</a>
+                <a href="#architecture" class="nav-link block rounded-lg px-4 py-2 transition">Architecture</a>
+                <a href="#database"     class="nav-link block rounded-lg px-4 py-2 transition">Database</a>
+                <a href="#rag"          class="nav-link block rounded-lg px-4 py-2 transition">RAG Pipeline</a>
+                <a href="#api"          class="nav-link block rounded-lg px-4 py-2 transition">API Reference</a>
+                <a href="#services"     class="nav-link block rounded-lg px-4 py-2 transition">Service Layer</a>
+                <a href="#workflows"    class="nav-link block rounded-lg px-4 py-2 transition">Core Workflows</a>
+                <a href="#environment"  class="nav-link block rounded-lg px-4 py-2 transition">Environment</a>
+                <a href="#security"     class="nav-link block rounded-lg px-4 py-2 transition">Security</a>
+                <a href="#local-dev"    class="nav-link block rounded-lg px-4 py-2 transition">Local Development</a>
+                <a href="#roadmap"      class="nav-link block rounded-lg px-4 py-2 transition">Roadmap</a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="relative z-10 mx-auto max-w-6xl flex-1 p-6 md:p-12">
+
+        <!-- ── Overview ───────────────────────────────────────────── -->
+        <section id="overview" class="mb-16">
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-300/20 bg-indigo-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-accent">
+                <i class="fa-solid fa-brain"></i>
+                Developer Documentation
+            </div>
+            <h2 class="border-b border-white/10 pb-5 text-4xl font-black tracking-tight md:text-5xl">
+                Jarvis – AI Knowledge Base
+            </h2>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-gray-400">
+                Jarvis is a multi-tenant RAG platform that turns company documents into a cited, grounded AI assistant.
+                Workspaces upload PDFs, DOCX files, and SOPs. A FastAPI backend extracts, chunks, and embeds the text
+                into a pgvector database. Employees then ask business questions and receive inline-cited answers that
+                trace every claim back to its source document.
+            </p>
+            <div class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-accent"><i class="fa-solid fa-bullseye pr-2"></i> Product Purpose</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        A company knowledge layer where every answer is traceable to a real document chunk. Not a general
+                        chatbot — Jarvis only answers from what your company has uploaded.
+                    </p>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-accent"><i class="fa-solid fa-circle-nodes pr-2"></i> Operational Flow</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Document upload → text extraction → chunking → Gemini embedding → pgvector storage.
+                        Question → semantic search → context assembly → Gemini chat → cited answer.
+                    </p>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-accent"><i class="fa-solid fa-user-lock pr-2"></i> Demo Access</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><span class="text-white">Email:</span> <code>admin@jarvis.demo</code></li>
+                        <li><span class="text-white">Password:</span> <code>password</code></li>
+                        <li class="text-xs text-white/30">Demo credentials at the live sandbox.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Tech Stack ─────────────────────────────────────────── -->
+        <section id="stack" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-layer-group text-accent"></i> Tech Stack
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">Frontend</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><span class="text-white">Framework:</span> Next.js 14 App Router</li>
+                        <li><span class="text-white">Language:</span> TypeScript</li>
+                        <li><span class="text-white">UI:</span> React, Tailwind CSS, shadcn-style primitives</li>
+                        <li><span class="text-white">Auth client:</span> Supabase JS client with server-side middleware</li>
+                        <li><span class="text-white">Deployment:</span> Vercel</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">Backend</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><span class="text-white">API:</span> FastAPI (Python) at <code>/api/v1</code></li>
+                        <li><span class="text-white">Auth:</span> Supabase Auth (JWT verified per request)</li>
+                        <li><span class="text-white">Database:</span> Supabase Postgres with <code>pgvector</code> extension</li>
+                        <li><span class="text-white">File storage:</span> Supabase Storage (<code>company-documents</code> bucket)</li>
+                        <li><span class="text-white">AI:</span> Google Gemini — <code>gemini-embedding-2</code> (768-dim) + <code>gemini-2.5-flash</code></li>
+                        <li><span class="text-white">Doc parsing:</span> <code>pypdf</code> for PDF, <code>python-docx</code> for DOCX</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── System Architecture ────────────────────────────────── -->
+        <section id="architecture" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-sitemap text-accent"></i> System Architecture
+            </h2>
+            <p class="mb-6 max-w-3xl leading-7 text-gray-400">
+                The system has two distinct runtime layers. The Next.js frontend handles auth, workspace management,
+                and the UI. The FastAPI backend owns all document processing, vector embedding, similarity search,
+                and AI answer generation. The two layers communicate over authenticated REST.
+            </p>
+            <div class="mermaid">
+graph TD
+    A[Next.js Frontend] --> B[FastAPI Backend /api/v1]
+    B --> C[(Supabase Postgres + pgvector)]
+    B --> D[Supabase Storage]
+    B --> E[Gemini Embedding API]
+    B --> F[Gemini Chat API]
+    A --> G[Supabase Auth]
+    G --> B
+    C --> H[document_embeddings table]
+    C --> I[document_chunks table]
+    C --> J[knowledge_entries table]
+            </div>
+            <div class="grid gap-5 md:grid-cols-3">
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Public Routes</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        <code>/</code> landing page, <code>/auth/sign-in</code>, <code>/auth/sign-up</code>.
+                        All other routes require an active session.
+                    </p>
+                </div>
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Protected Workspace</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Dashboard, Documents, Assistant, Knowledge Capture, Search, Context preview, and Settings —
+                        all scoped to the authenticated user's company.
+                    </p>
+                </div>
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Multi-tenant Isolation</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Every document, chunk, embedding, and knowledge entry carries a <code>company_id</code>.
+                        RLS policies on Supabase enforce row-level isolation — one workspace never touches another's data.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Database ───────────────────────────────────────────── -->
+        <section id="database" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-database text-accent"></i> Database Schema
+            </h2>
+            <p class="mb-6 text-gray-400">
+                Supabase Postgres stores all workspace data. RLS is enabled on every table.
+                The <code>pgvector</code> extension powers cosine-similarity semantic search over the <code>document_embeddings</code> table through the <code>search_document_chunks</code> RPC.
+            </p>
+            <div class="overflow-x-auto doc-card p-1">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Description</th>
+                            <th>Key Fields</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>profiles</code></td>
+                            <td>One profile per Supabase Auth user.</td>
+                            <td><code>id</code>, <code>email</code>, <code>full_name</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>companies</code></td>
+                            <td>A workspace / tenant. Created once per organization at sign-up.</td>
+                            <td><code>id</code>, <code>name</code>, <code>slug</code>, <code>created_by</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>memberships</code></td>
+                            <td>Links users to companies. Controls role-based access.</td>
+                            <td><code>user_id</code>, <code>company_id</code>, <code>role</code> (owner / admin / member), <code>status</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>documents</code></td>
+                            <td>Uploaded files with lifecycle status tracking.</td>
+                            <td><code>company_id</code>, <code>title</code>, <code>file_type</code> (pdf / docx / txt), <code>storage_path</code>, <code>status</code> (uploaded / processing / processed / failed), <code>extracted_text</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>document_chunks</code></td>
+                            <td>Text chunks produced by the chunking pipeline. Immutable after insert.</td>
+                            <td><code>document_id</code>, <code>chunk_index</code>, <code>content</code>, <code>character_count</code>, <code>estimated_token_count</code>, <code>metadata</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>document_embeddings</code></td>
+                            <td>768-dimensional Gemini vectors stored in pgvector. Immutable after insert.</td>
+                            <td><code>chunk_id</code>, <code>company_id</code>, <code>embedding</code>, <code>embedding_model</code>, <code>embedding_dimension</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>knowledge_entries</code></td>
+                            <td>Structured knowledge captured through guided templates before publishing into the RAG pipeline.</td>
+                            <td><code>company_id</code>, <code>title</code>, <code>category</code>, <code>status</code> (draft / generated / published), <code>template_id</code>, <code>answers</code>, <code>published_document_id</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>activity_logs</code></td>
+                            <td>Append-only audit trail of workspace actions.</td>
+                            <td><code>company_id</code>, <code>user_id</code>, <code>action</code>, <code>metadata</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-6">
+                <h3 class="mb-3 text-xl font-bold text-accent">Semantic Search RPC</h3>
+                <pre><code>-- Supabase database function (pgvector)
+search_document_chunks(
+  p_company_id    uuid,
+  p_query_embedding vector(768),
+  p_match_count   int  -- default 5
+)
+RETURNS TABLE (
+  chunk_id         uuid,
+  document_id      uuid,
+  document_title   text,
+  chunk_index      int,
+  similarity_score float,
+  content          text,
+  metadata         jsonb
+)</code></pre>
+                <p class="mt-3 text-sm text-gray-400">
+                    The RPC uses cosine similarity (<code>&lt;=&gt;</code> operator) scoped by <code>company_id</code> so
+                    each workspace only searches its own embeddings. Called by the retrieval service on every assistant question.
+                </p>
+            </div>
+        </section>
+
+        <!-- ── RAG Pipeline ───────────────────────────────────────── -->
+        <section id="rag" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-microchip text-accent"></i> RAG Pipeline
+            </h2>
+            <p class="mb-4 max-w-3xl leading-7 text-gray-400">
+                The Retrieval-Augmented Generation pipeline has two distinct phases: document ingestion (offline)
+                and query answering (online). Both are stateless operations — any state lives in Supabase.
+            </p>
+
+            <h3 class="mb-3 text-xl font-bold text-accent">Ingestion Phase</h3>
+            <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant API as FastAPI
+    participant DP as DocumentProcessor
+    participant DC as DocumentChunker
+    participant ES as EmbeddingService
+    participant G as Gemini Embedding
+    participant DB as Supabase
+
+    U->>API: Upload file (PDF / DOCX / TXT)
+    API->>DB: Store file in Storage bucket
+    API->>DB: Insert document row (status=uploaded)
+    U->>API: POST /documents/{id}/process
+    API->>DP: extract_text(file_type, content)
+    DP->>DP: Normalize whitespace, strip soft hyphens
+    DP->>API: ExtractionResult(extracted_text)
+    API->>DC: RecursiveChunkStrategy.chunk(text)
+    DC->>API: list[KnowledgeChunk] (1000 chars, 200 overlap)
+    API->>DB: Insert document_chunks rows
+    API->>ES: generate_for_document(document_id)
+    ES->>G: embedContent for each chunk
+    G->>ES: 768-dim vector (L2-normalized)
+    ES->>DB: Insert document_embeddings rows
+    API->>DB: Update document status=processed
+            </div>
+
+            <h3 class="mb-3 text-xl font-bold text-accent">Chunking Strategy</h3>
+            <div class="grid gap-4 md:grid-cols-3 mb-6">
+                <div class="sub-card p-5">
+                    <h4 class="mb-1 text-sm font-bold text-white">Chunk Size</h4>
+                    <p class="text-xs leading-6 text-gray-400">1,000 characters per chunk. Long paragraphs are split at sentence boundaries (<code>. ? ! ; ,</code>) before falling back to word boundaries.</p>
+                </div>
+                <div class="sub-card p-5">
+                    <h4 class="mb-1 text-sm font-bold text-white">Overlap</h4>
+                    <p class="text-xs leading-6 text-gray-400">200-character overlap between adjacent chunks to preserve cross-boundary context for retrieval.</p>
+                </div>
+                <div class="sub-card p-5">
+                    <h4 class="mb-1 text-sm font-bold text-white">Embedding</h4>
+                    <p class="text-xs leading-6 text-gray-400"><code>gemini-embedding-2</code> produces 768-dim vectors, L2-normalized before storage. Versioned via <code>embedding_version</code>.</p>
+                </div>
+            </div>
+
+            <h3 class="mb-3 text-xl font-bold text-accent">Query Phase</h3>
+            <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant API as FastAPI /assistant
+    participant RS as RetrievalService
+    participant CB as ContextBuilderService
+    participant AI as AIGenerationService
+    participant G as Gemini Chat
+    participant DB as Supabase pgvector
+
+    U->>API: POST /assistant { question }
+    API->>RS: search(query, limit=5)
+    RS->>G: embed(question) → 768-dim vector
+    RS->>DB: search_document_chunks(company_id, vector)
+    DB->>RS: ranked chunks with similarity_score
+    RS->>CB: build_context(chunks, max_context_chars)
+    CB->>CB: dedupe chunks, fit to character budget
+    CB->>CB: format numbered [Source N] blocks
+    CB->>AI: ContextBuildResponse
+    AI->>AI: calculate_confidence(best_score)
+    AI->>G: generate(system_instructions, prompt)
+    G->>AI: answer with inline [1] [2] citation markers
+    AI->>AI: extract_citations(answer, chunks)
+    AI->>U: AssistantResponse { answer, citations, sources, confidence }
+            </div>
+
+            <h3 class="mb-3 text-xl font-bold text-accent">Confidence Scoring</h3>
+            <div class="overflow-x-auto doc-card p-1 mt-2">
+                <table>
+                    <thead>
+                        <tr><th>Level</th><th>Condition</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="text-green-400 font-bold">High</span></td><td>Best similarity score ≥ 0.78, at least 1 source matched, context not truncated</td></tr>
+                        <tr><td><span class="text-yellow-300 font-bold">Medium</span></td><td>Best similarity score ≥ 0.62</td></tr>
+                        <tr><td><span class="text-red-400 font-bold">Low</span></td><td>No chunks retrieved, or best score below 0.62</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── API Reference ──────────────────────────────────────── -->
+        <section id="api" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-code-branch text-accent"></i> API Reference
+            </h2>
+            <p class="mb-6 text-sm text-gray-500">All routes are prefixed with <code>/api/v1</code> and require a valid Supabase JWT unless noted.</p>
+            <div class="space-y-6">
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Documents</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-get">GET</span> <code>/documents</code> — list the company's uploaded documents.</p>
+                        <p><span class="method method-post">POST</span> <code>/documents/{id}/process</code> — trigger the full ingestion pipeline: extract → chunk → embed → store. Returns processing status.</p>
+                    </div>
+                </div>
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Assistant (RAG)</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-post">POST</span> <code>/assistant</code> — ask a business question. Returns <code>answer</code>, inline <code>citations</code>, <code>sources</code> list, <code>confidence</code> level, and whether context was truncated.</p>
+                    </div>
+                </div>
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Search and Context</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-post">POST</span> <code>/search</code> — run a raw semantic search against the company's document embeddings. Returns ranked <code>KnowledgeSearchResult</code> items with similarity scores.</p>
+                        <p><span class="method method-post">POST</span> <code>/context</code> — build a formatted context block from a query without calling the AI. Useful for debugging retrieval quality before the answer step.</p>
+                    </div>
+                </div>
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Knowledge Capture</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-get">GET</span> <code>/capture/templates</code> — list available capture templates (SOP, FAQ, Policy, Process, Checklist).</p>
+                        <p><span class="method method-post">POST</span> <code>/capture/draft</code> — save a manual draft from template answers.</p>
+                        <p><span class="method method-post">POST</span> <code>/capture/generate</code> — send template answers to Gemini and get an AI-drafted knowledge document back.</p>
+                        <p><span class="method method-post">POST</span> <code>/capture/publish</code> — push a finalized draft into the full document ingestion pipeline so it becomes searchable in the RAG assistant.</p>
+                    </div>
+                </div>
+
+                <div class="doc-card border-l-4 border-accent p-6">
+                    <h3 class="mb-3 text-xl font-bold">Auth and Health</h3>
+                    <div class="space-y-3 text-sm text-gray-400">
+                        <p><span class="method method-post">POST</span> <code>/auth/*</code> — workspace sign-up including <code>create_initial_workspace</code> Supabase RPC call.</p>
+                        <p><span class="method method-get">GET</span> <code>/health</code> — liveness probe. No auth required.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ── Service Layer ──────────────────────────────────────── -->
+        <section id="services" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-gears text-accent"></i> Service Layer
+            </h2>
+            <div class="overflow-x-auto doc-card p-1">
+                <table>
+                    <thead>
+                        <tr><th>Service</th><th>Responsibility</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>document_processor.py</code></td>
+                            <td>Extracts raw text from PDF (pypdf layout mode), DOCX (paragraph + table walk), and TXT. Normalizes whitespace, soft hyphens, and form feeds. Validates file magic bytes before attempting parse.</td>
+                        </tr>
+                        <tr>
+                            <td><code>document_chunker.py</code></td>
+                            <td>RecursiveChunkStrategy: paragraph-aware chunking at 1,000 chars / 200 overlap. Finds semantic boundaries (sentence endings, commas, spaces) before hard splits.</td>
+                        </tr>
+                        <tr>
+                            <td><code>embedding_service.py</code></td>
+                            <td>Generates Gemini embeddings for all chunks of a document. Deletes stale embeddings before re-embedding. Verifies <code>company_id</code> ownership per chunk.</td>
+                        </tr>
+                        <tr>
+                            <td><code>embedding_provider.py</code></td>
+                            <td>GeminiEmbeddingProvider — calls <code>embedContent</code> REST API, validates vector dimension, and L2-normalizes the output before returning.</td>
+                        </tr>
+                        <tr>
+                            <td><code>retrieval_service.py</code></td>
+                            <td>Embeds the user query, calls <code>search_document_chunks</code> Supabase RPC, maps results to <code>KnowledgeSearchResult</code> schema. Scoped to the user's active company membership.</td>
+                        </tr>
+                        <tr>
+                            <td><code>context_builder_service.py</code></td>
+                            <td>Deduplicates retrieved chunks, fits them within a character budget, formats numbered <code>[Source N]</code> blocks, and aggregates source-level metadata. Signals if context was truncated.</td>
+                        </tr>
+                        <tr>
+                            <td><code>ai_generation_service.py</code></td>
+                            <td>Calls Gemini chat with grounded system instructions and formatted context. Extracts <code>[N]</code> citation markers from the answer and maps each back to a chunk and document.</td>
+                        </tr>
+                        <tr>
+                            <td><code>knowledge_capture_service.py</code></td>
+                            <td>Handles the full Knowledge Capture lifecycle: draft save, AI draft generation, and publish (which calls the document ingestion pipeline to make the entry searchable).</td>
+                        </tr>
+                        <tr>
+                            <td><code>document_service.py</code></td>
+                            <td>SupabaseDocumentClient — all Supabase REST calls for documents, chunks, embeddings, memberships, and activity logs. Service-role and user-role clients used appropriately.</td>
+                        </tr>
+                        <tr>
+                            <td><code>ai_provider.py</code></td>
+                            <td>GeminiChatProvider — calls the Gemini <code>generateContent</code> REST API with system instructions and prompt. Returns the text response.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── Core Workflows ─────────────────────────────────────── -->
+        <section id="workflows" class="mb-16">
+            <h2 class="mb-2 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-route text-accent"></i> Core Workflows
+            </h2>
+            <p class="mb-8 text-sm text-gray-500">
+                The two workflows that matter most: ingesting a document into the knowledge base, and answering a question with grounded citations.
+            </p>
+
+            <div class="mb-10">
+                <h3 class="mb-4 text-xl font-bold text-accent">Knowledge Capture Flow</h3>
+                <p class="mb-4 text-sm text-gray-400 max-w-3xl">
+                    Users without a document to upload can capture knowledge through a guided interview. The capture flow
+                    lets them fill in a structured template (SOP, FAQ, Policy, etc.), generate an AI-written draft, edit it,
+                    and then publish it — which pushes it through the same chunking and embedding pipeline as a regular document.
+                </p>
+            </div>
+
+            <div class="space-y-0">
+                <div class="workflow-step">
+                    <div class="step-badge">1</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Template Selection</h3>
+                            <span class="step-tag">CAPTURE</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            User picks a template type: SOP, Department Process, FAQ, Policy, or Checklist.
+                            Each template provides structured guided questions (e.g. purpose, steps, owner, exceptions for an SOP).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">2</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">AI Draft Generation</h3>
+                            <span class="step-tag">GEMINI</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            Answers are sent to <code>POST /capture/generate</code>. The backend builds a structured prompt
+                            from the template and answers, calls Gemini, and returns a formatted knowledge document draft.
+                            The draft is saved to <code>knowledge_entries</code> with <code>status=generated</code>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">3</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Review and Edit</h3>
+                            <span class="step-tag">USER ACTION</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            Users can review and edit the draft in the UI. <code>POST /capture/draft</code> saves changes.
+                            The <code>content</code> field holds the current document body.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">4</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Publish into RAG Pipeline</h3>
+                            <span class="step-tag">PIPELINE</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            <code>POST /capture/publish</code> writes the content to Supabase Storage as a <code>.txt</code> file,
+                            inserts a <code>documents</code> row, runs the full ingestion pipeline (extract → chunk → embed),
+                            and updates the <code>knowledge_entry</code> to <code>status=published</code> with a reference to the generated <code>document_id</code>.
+                            The entry is now searchable by the RAG assistant.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-badge">5</div>
+                    <div class="step-card">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-bold text-white">Grounded Answer with Citations</h3>
+                            <span class="step-tag">ASSISTANT</span>
+                        </div>
+                        <p class="text-xs leading-6 text-gray-400">
+                            A user question hits <code>POST /assistant</code>. The system embeds the query, retrieves the
+                            top-N chunks by cosine similarity, assembles a context block with numbered <code>[Source N]</code>
+                            labels, and sends it to Gemini with strict grounding instructions. The model writes inline
+                            citation markers (<code>[1]</code>, <code>[2]</code>…) which are parsed back out and linked to
+                            specific chunks and documents. The response includes answer text, citations, source documents, and a confidence level.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Environment ────────────────────────────────────────── -->
+        <section id="environment" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-key text-accent"></i> Environment Variables
+            </h2>
+            <p class="mb-5 text-gray-400">
+                Backend secrets must never be exposed to the client. The Gemini API key and Supabase service-role key
+                are server-only.
+            </p>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <h3 class="mb-2 text-sm font-bold text-white uppercase tracking-wider">FastAPI Backend (<code>.env</code>)</h3>
+                    <pre><code>SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
+DOCUMENT_STORAGE_BUCKET=company-documents
+GEMINI_API_KEY=
+GEMINI_EMBEDDING_MODEL=gemini-embedding-2
+GEMINI_EMBEDDING_DIMENSION=768
+GEMINI_CHAT_MODEL=gemini-2.5-flash
+API_CORS_ORIGINS=http://localhost:3000
+LOG_LEVEL=INFO</code></pre>
+                </div>
+                <div>
+                    <h3 class="mb-2 text-sm font-bold text-white uppercase tracking-wider">Next.js Frontend (<code>.env.local</code>)</h3>
+                    <pre><code>NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1</code></pre>
+                </div>
+            </div>
+            <div class="mt-5 grid gap-4 md:grid-cols-2">
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Dual Supabase Clients</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        Most reads use the user's JWT (user-scoped client). Operations that need to bypass RLS —
+                        like writing embeddings or processing documents — use the service-role key. This prevents
+                        escalation while keeping the pipeline functional.
+                    </p>
+                </div>
+                <div class="sub-card p-5">
+                    <h3 class="mb-2 font-bold text-white">Gemini Models</h3>
+                    <p class="text-sm leading-6 text-gray-400">
+                        <code>gemini-embedding-2</code> produces 768-dim vectors for both document chunks and query embedding.
+                        <code>gemini-2.5-flash</code> handles both assistant answer generation and Knowledge Capture AI drafting.
+                        Both are configurable via environment variables.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Security ───────────────────────────────────────────── -->
+        <section id="security" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-shield-halved text-accent"></i> Security Notes
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-white">Authentication</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>Supabase email/password auth. JWT verified on every FastAPI request through the <code>get_current_user</code> dependency.</li>
+                        <li>Workspace creation uses a transactional Supabase RPC (<code>create_initial_workspace</code>) to atomically create the company and owner membership.</li>
+                        <li>Middleware on the Next.js side redirects unauthenticated users to <code>/auth/sign-in</code>.</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-white">Data Isolation</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>RLS enabled on all tables. Users can only access rows where <code>company_id</code> matches their active membership.</li>
+                        <li>Semantic search is always scoped by <code>company_id</code> — a workspace's embeddings are invisible to other tenants.</li>
+                        <li>Chunk ownership is verified in the embedding service before generating vectors.</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-white">Prompt Injection Defense</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>System instructions explicitly tell Gemini to treat uploaded document text as untrusted source material, not executable instructions.</li>
+                        <li>The context block labels content as "Retrieved source context" and instructs the model to ignore instructions embedded inside documents.</li>
+                        <li>Answers use only the supplied context — the model is instructed to say "I don't know" rather than hallucinate.</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-white">File Validation</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>PDF extractor checks for <code>%PDF</code> magic bytes. DOCX extractor checks for <code>PK</code> ZIP header.</li>
+                        <li>Encrypted PDFs are rejected with a clear error message.</li>
+                        <li>Empty or unextractable documents fail at the processing stage with a descriptive error stored in <code>extraction_error</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Local Development ──────────────────────────────────── -->
+        <section id="local-dev" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-terminal text-accent"></i> Local Development
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">FastAPI Backend</h3>
+                    <pre><code>cd apps/api
+python -m venv .venv
+.venv/Scripts/activate  # Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000</code></pre>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-4 text-xl font-bold">Next.js Frontend</h3>
+                    <pre><code>cd apps/web
+npm install
+npm run dev   # starts on localhost:3000</code></pre>
+                </div>
+            </div>
+            <div class="mt-5 doc-card p-6">
+                <h3 class="mb-3 text-xl font-bold">Demo Flow</h3>
+                <ol class="list-decimal space-y-2 pl-5 text-sm leading-6 text-gray-400">
+                    <li>Sign in at <code>/auth/sign-in</code> with the demo credentials.</li>
+                    <li>Open <strong>Documents</strong> — upload a PDF or DOCX and trigger processing.</li>
+                    <li>Open <strong>Assistant</strong> — ask a question about the uploaded document and inspect the cited answer.</li>
+                    <li>Open <strong>Knowledge Capture</strong> — pick the SOP template, fill answers, generate a draft, edit it, and publish it into the pipeline.</li>
+                    <li>Return to <strong>Assistant</strong> and ask a question that the captured knowledge answers — verify the published capture is now cited.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── Roadmap ────────────────────────────────────────────── -->
+        <section id="roadmap" class="mb-16">
+            <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold">
+                <i class="fa-solid fa-road text-accent"></i> Roadmap and Boundaries
+            </h2>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-green-300">Currently Implemented</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>Multi-tenant workspaces with owner / admin / member roles.</li>
+                        <li>PDF, DOCX, and TXT text extraction with normalization.</li>
+                        <li>Recursive paragraph-aware chunking (1,000 chars / 200 overlap).</li>
+                        <li>Gemini embedding-2 vector generation with L2 normalization.</li>
+                        <li>pgvector cosine-similarity semantic search scoped by tenant.</li>
+                        <li>Inline-cited RAG answers with confidence scoring (high / medium / low).</li>
+                        <li>Knowledge Capture: guided templates → AI draft → publish into RAG.</li>
+                        <li>Prompt injection defense through system instructions and content labeling.</li>
+                        <li>Activity logging for all key workspace events.</li>
+                    </ul>
+                </div>
+                <div class="doc-card p-6">
+                    <h3 class="mb-3 font-bold text-yellow-200">Future Work</h3>
+                    <ul class="space-y-2 text-sm leading-6 text-gray-400">
+                        <li>Background async processing queue (currently synchronous on request).</li>
+                        <li>OCR support for image-only or scanned PDFs.</li>
+                        <li>Re-embedding pipeline when the embedding model changes (versioned via <code>embedding_version</code>).</li>
+                        <li>Document deletion cascading chunks and embeddings.</li>
+                        <li>Member invitation flow (memberships can carry <code>status=invited</code>).</li>
+                        <li>Answer streaming for the assistant endpoint.</li>
+                        <li>Usage analytics and per-workspace document quotas.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-20 border-t border-white/10 pt-8 text-center text-xs text-gray-600">
+            <p>&copy; 2026 Jarvis – AI Knowledge Base. Developer documentation for portfolio and handoff use.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach((section) => {
+                if (window.scrollY >= section.offsetTop - 160) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach((link) => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -16,6 +16,7 @@ export const projects: Project[] = [
     icon: "JAR",
     liveUrl: "https://ai-knowledge-base-web.vercel.app/",
     videoPath: "Jarvis.mp4",
+    docsHref: "/docs/developer_documentationJarvis.html",
     metrics: [
       { label: "Pipeline", value: "RAG + pgvector" },
       { label: "Isolation", value: "Multi-tenant" },
