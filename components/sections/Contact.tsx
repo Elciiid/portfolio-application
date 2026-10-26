@@ -35,7 +35,7 @@ function AvailabilityCard() {
           className="text-[13px] font-medium"
           style={{ color: "var(--foreground)" }}
         >
-          Available for hire
+          Open to part-time and contract work
         </span>
       </div>
 
@@ -98,7 +98,7 @@ function AvailabilityCard() {
               Preferred engagement
             </p>
             <p className="text-[13px] font-medium mt-0.5">
-              Full-time - Systems / AI automation
+              Part-time and contract - Systems / AI automation
             </p>
           </div>
         </div>
@@ -184,9 +184,10 @@ export default function Contact() {
             transition={{ duration: 0.55, ease, delay: 0.05 }}
             viewport={{ once: true, margin: "-80px" }}
           >
-            Open to full-time roles building internal tools, backend workflows,
-            and AI-assisted automation. For interviews or project fit, send a
-            short note and I&apos;ll reply directly.
+            Open to part-time and contract work, remote, PHT (UTC+8), building
+            internal tools, backend workflows, and AI-assisted automation. For
+            interviews or project fit, send a short note and I&apos;ll reply
+            directly.
           </motion.p>
 
           <AnimatePresence mode="wait">

@@ -8,7 +8,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const buildInfo = {
   framework: "Next.js",
   version:   "v2.1.0",
-  updated:   "June 2026",
+  updated:   "October 2026",
 };
 
 const socials = [
@@ -114,7 +114,7 @@ export default function Footer() {
             className="text-[12px]"
             style={{ color: "var(--muted-foreground)", opacity: 0.5 }}
           >
-            (c) {copyrightYear} Jonas David. Open to full-time roles.
+            (c) {copyrightYear} Jonas David. Open to part-time and contract work.
           </p>
         </div>
 

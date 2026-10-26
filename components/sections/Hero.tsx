@@ -123,7 +123,7 @@ export default function Hero() {
                 className="text-[12px] font-medium tracking-wide"
                 style={{ color: "var(--muted-foreground)" }}
               >
-                Available for hire
+                Open to part-time and contract work
               </span>
             </motion.div>
 
@@ -160,11 +160,11 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: easeEnter, delay: 0.35 }}
             >
-              Full-stack developer at{" "}
-              <span className="text-foreground font-medium">La Rose Noire Philippines</span>
-              {" "}- a 1,100-employee artisan bakery and manufacturer. Designed and shipped{" "}
+              Software Engineer at{" "}
+              <span className="text-foreground font-medium">Artea Green Ventures (AGV)</span>,
+              {" "}running a live multi-tenant portal for Philippine local government clients. Previously shipped{" "}
               <span className="text-foreground font-medium">8 production systems</span>{" "}
-              across real-time audio infrastructure, enterprise workflows, and internal tooling - all end-to-end, without handoffs.
+              as a full-stack intern at La Rose Noire.
             </motion.p>
 
             <motion.div

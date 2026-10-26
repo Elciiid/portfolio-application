@@ -2,6 +2,27 @@ import { Project } from "@/types";
 
 export const projects: Project[] = [
   {
+    id: "agv-portal",
+    title: "AGV Portal",
+    description:
+      "Private multi-tenant portal for Philippine local government clients, built around database-enforced isolation, mandatory two-step sign-in, and audited access.",
+    longDescription:
+      "A live multi-tenant portal I run at Artea Green Ventures for Philippine local government clients. Tenant data is isolated with Postgres row-level security and checked by tested SQL harnesses, including a 149-check adversarial test run whenever a new province is added. Sign-in requires two steps, with an admin reset path, and an append-only audit log records activity. A role-based file library handles shared documents. Releases ship in phases with tested rollbacks, and delivery is AI-assisted with Claude Code. This work is confidential, so there is no public link, demo, or screenshots.",
+    tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase", "Vercel"],
+    category: "portal",
+    source: "professional",
+    featured: true,
+    accentColor: "#34D399",
+    icon: "AGV",
+    isPrivate: true,
+    metrics: [
+      { label: "Isolation", value: "Postgres RLS" },
+      { label: "Sign-in", value: "Two-step" },
+      { label: "Audit log", value: "Append-only" },
+    ],
+  },
+
+  {
     id: "jarvis-ai-knowledge-base",
     title: "Jarvis – AI Knowledge Base",
     description:
@@ -268,5 +289,6 @@ export const projects: Project[] = [
 ];
 
 export const featuredProjects = projects.filter((p) => p.featured);
+export const professionalProjects = projects.filter((p) => p.source === "professional");
 export const internshipProjects = projects.filter((p) => p.source === "internship");
 export const personalProjects = projects.filter((p) => p.source === "personal");

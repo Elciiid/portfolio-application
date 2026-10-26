@@ -4,16 +4,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ExternalLink, Music, ClipboardCheck, Building2,
   Ticket, Globe, BarChart3, Dices, Check, Play, X, MessagesSquare,
-  Bot, ShieldCheck, Languages, FileText, Brain,
+  Bot, ShieldCheck, Languages, FileText, Brain, Landmark, Lock,
   LucideProps,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { internshipProjects, personalProjects } from "@/lib/projects";
+import { professionalProjects, internshipProjects, personalProjects } from "@/lib/projects";
 import { Project } from "@/types";
 
 // ─── Icon map ────────────────────────────────────────────────────────────────
 type IconComponent = React.FC<LucideProps>;
 const PROJECT_ICONS: Record<string, IconComponent> = {
+  "agv-portal":            Landmark,
   "mp3-streamer":          Music,
   "return-to-work-portal": ClipboardCheck,
   "facilities-portal":     Building2,
@@ -37,7 +38,22 @@ const techStack: { label: string; items: string[] }[] = [
 
 const easeEnter = [0.22, 1, 0.36, 1] as const;
 
+type Tab = "professional" | "internship" | "personal";
+
+const TAB_PROJECTS: Record<Tab, Project[]> = {
+  professional: professionalProjects,
+  internship: internshipProjects,
+  personal: personalProjects,
+};
+
+const TAB_LABELS: Record<Tab, string> = {
+  professional: "AGV",
+  internship: "La Rose Noire",
+  personal: "Personal",
+};
+
 function getProjectSignal(project: Project) {
+  if (project.isPrivate) return "Private - confidential";
   if (project.source === "internship" && project.featured) return "Production workflow";
   if (project.source === "internship") return "Internal operations";
   if (project.category === "web3") return "Automation prototype";
@@ -317,6 +333,19 @@ function ProjectFallback({ project, onPlayVideo }: { project: Project; onPlayVid
                 <div className="text-[10px] text-white/30 mt-0.5 tracking-wide">{m.label}</div>
               </motion.div>
             ))}
+          </div>
+        )}
+
+        {project.isPrivate && (
+          <div
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium z-10"
+            style={{
+              background: `${project.accentColor}18`,
+              border: `1px solid ${project.accentColor}44`,
+              color: project.accentColor,
+            }}
+          >
+            <Lock size={11} /> Private project - confidential, no public link
           </div>
         )}
 
@@ -662,7 +691,7 @@ function TabButton({ label, count, active, onClick }: { label: string; count: nu
   return (
     <button
       onClick={onClick}
-      className="relative flex items-center gap-2 px-4 py-2 text-[13px] font-medium transition-colors duration-200"
+      className="relative flex items-center gap-2 px-3 sm:px-4 py-2 text-[13px] font-medium whitespace-nowrap transition-colors duration-200"
       style={{ color: active ? "var(--foreground)" : "var(--muted-foreground)" }}
     >
       {label}
@@ -689,16 +718,15 @@ function TabButton({ label, count, active, onClick }: { label: string; count: nu
 
 // ─── Main Projects Section ────────────────────────────────────────────────────
 export default function Projects() {
-  const [tab, setTab] = useState<"internship" | "personal">("personal");
-  const projects = tab === "internship" ? internshipProjects : personalProjects;
+  const [tab, setTab] = useState<Tab>("personal");
+  const projects = TAB_PROJECTS[tab];
   const [active, setActive] = useState<Project>(personalProjects[0]);
   const [videoProject, setVideoProject] = useState<Project | null>(null);
   const ActiveIcon = PROJECT_ICONS[active.id];
 
-  const handleTabChange = (t: "internship" | "personal") => {
+  const handleTabChange = (t: Tab) => {
     setTab(t);
-    const list = t === "internship" ? internshipProjects : personalProjects;
-    setActive(list[0]);
+    setActive(TAB_PROJECTS[t][0]);
   };
 
   return (
@@ -745,6 +773,12 @@ export default function Projects() {
             transition={{ duration: 0.5, ease: easeEnter, delay: 0.05 }}
             viewport={{ once: true }}
           >
+            <TabButton
+              label={TAB_LABELS.professional}
+              count={professionalProjects.length}
+              active={tab === "professional"}
+              onClick={() => handleTabChange("professional")}
+            />
             <TabButton
               label="La Rose Noire"
               count={internshipProjects.length}
@@ -801,7 +835,9 @@ export default function Projects() {
                     transition={{ duration: 0.4 }}
                   />
                   <span className="text-[11px] text-white/30 font-mono truncate tracking-tight">
-                    {active.isComingSoon ? `${active.id}.dev - in progress` : (active.liveUrl?.replace("https://", "") ?? `${active.id}.internal`)}
+                    {active.isPrivate
+                      ? "Private project - confidential"
+                      : active.isComingSoon ? `${active.id}.dev - in progress` : (active.liveUrl?.replace("https://", "") ?? `${active.id}.internal`)}
                   </span>
                 </div>
                 {active.liveUrl && !active.isComingSoon && (
@@ -830,7 +866,7 @@ export default function Projects() {
                 >
                   <div className="px-4 py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.045)" }}>
                     <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/20">
-                      {tab === "internship" ? "La Rose Noire" : "Personal"}
+                      {TAB_LABELS[tab]}
                     </span>
                   </div>
                   <nav className="flex-1 overflow-y-auto py-1.5">
